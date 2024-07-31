@@ -11,6 +11,10 @@ The BOOT_APP is designed to be the initial home launcher application for the Nex
 - **Video Playback:** Demonstrates video playback functionality.
 - **Network Status Monitoring:** Displays current network status and connection information.
 
+## Screenshot
+
+![BOOT_APP Screenshot](BOOT_APP/screen/BOOT_APP.png)
+
 ## Getting Started
 
 1. Clone the repository: `git clone https://github.com/KevincyCheng/VMC320.Android.git`
@@ -27,3 +31,4 @@ The BOOT_APP is designed to be the initial home launcher application for the Nex
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit pull requests for any improvements or bug fixes.
+
