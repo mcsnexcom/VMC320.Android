@@ -5,6 +5,8 @@ Welcome to the GitLab repository for the Android Demo APPs developed for the Nex
 ## VMC320 Machine Introduction
 
 The Nexcom VMC320 is a versatile vehicle mount computer designed for mobile computing solutions. It offers robust performance and reliability for a wide range of applications in vehicle environments. For more detailed information, please visit the [official product page](https://www.nexcom.com.tw/Products/mobile-computing-solutions/vehicle-mount-computer/vmc-10-inch/vmc-320-vehicle-mount-computer/OrderInginformation).
+![VMC320 Machine](vmc320.png)
+
 
 ## Included Demo Applications
 
