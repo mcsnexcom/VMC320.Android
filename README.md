@@ -40,6 +40,11 @@ Using TensorFlow Lite, this application performs object detection on video input
 
 Similar to the object detection demo, this application uses TensorFlow Lite for pose estimation. It detects and tracks human poses in real-time using video input from the HDMI-IN source.
 
+### 7. style_transfer - HDMI-IN Style Transfer Application
+
+The style_transfer application captures video input from the HDMI-IN source of the Nexcom VMC320 vehicle mount computer and applies various artistic styles to the captured images. This demo showcases the capability of performing style transfer using advanced neural network techniques.
+
+
 ---
 
 Feel free to explore the source code and modify it to suit your specific needs. Contributions and feedback are always welcome.
