@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">BOOT_APP</string>
+    <string name="chrome">chrome</string>
+    <string name="camera">camera</string>
+    <string name="settings">settings</string>
+    <string name="wifi">wifi</string>
+    <string name="bluetooth">bluetooth</string>
+    <string-array name="page_1_icons">
+        <item>@drawable/ic_chrome</item>
+        <item>@drawable/ic_camera</item>
+        <item>@drawable/ic_settings</item>
+        <item>@drawable/ic_wifi</item>
+        <item>@drawable/ic_bluetooth</item>
+    </string-array>
+    <string-array name="page_2_icons">
+        <item>@drawable/ic_chrome</item>
+        <item>@drawable/ic_camera</item>
+        <item>@drawable/ic_settings</item>
+        <item>@drawable/ic_wifi</item>
+        <item>@drawable/ic_bluetooth</item>
+    </string-array>
+    <string-array name="page_3_icons">
+        <item>@drawable/ic_chrome</item>
+        <item>@drawable/ic_camera</item>
+        <item>@drawable/ic_settings</item>
+        <item>@drawable/ic_wifi</item>
+        <item>@drawable/ic_bluetooth</item>
+    </string-array>
+</resources>
