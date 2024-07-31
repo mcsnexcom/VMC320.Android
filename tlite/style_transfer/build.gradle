@@ -1,0 +1,24 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext.kotlin_version = '2.0.0'
+    ext.java_version = JavaVersion.VERSION_1_8
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.2'
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7'
+        classpath 'de.undercouch:gradle-download-task:4.1.2'
+        classpath 'com.android.tools.build:gradle:8.3.2'
+        // Use the latest stable version of the Gradle plugin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
