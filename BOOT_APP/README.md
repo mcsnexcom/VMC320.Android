@@ -13,7 +13,7 @@ The BOOT_APP is designed to be the initial home launcher application for the Nex
 
 ## Screenshot
 
-![BOOT_APP Screenshot](BOOT_APP/screen/BOOT_APP.png)
+![BOOT_APP Screenshot](screen/BOOT_APP.png)
 
 ## Getting Started
 
