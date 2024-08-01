@@ -12,7 +12,7 @@ The posenet application uses TensorFlow Lite to perform pose estimation on video
 
 ## Screenshot
 
-![posenet Screenshot](screen\Posenet.png)
+![posenet Screenshot](screen/Posenet.png)
 
 ## Getting Started
 
