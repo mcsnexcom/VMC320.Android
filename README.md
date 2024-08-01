@@ -57,4 +57,4 @@ The image_segmentation application captures video input from the HDMI-IN source 
 
 Feel free to explore the source code and modify it to suit your specific needs. Contributions and feedback are always welcome.
 
-Repository: [VMC320.Android](https://github.com/KevincyCheng/VMC320.Android)
+Repository: [VMC320.Android](https://github.com/mcsnexcom/VMC320.Android)
