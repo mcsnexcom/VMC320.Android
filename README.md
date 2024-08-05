@@ -64,7 +64,7 @@ Repository: [posenet](AI-TLite/image_segmentation/README.md)
 ### 9. UFC 100
 
 UFC100 is an Android application designed to simulate the interface of a treadmill head unit. This app offers various controls and simulations, including different video playback speeds, app calls, Bluetooth, and sound controls.
-Repository: [posenet](UFC/README.md)
+Repository: [UFC-100](UFC/README.md)
 
 
 
