@@ -17,7 +17,7 @@ The BOOT_APP is designed to be the initial home launcher application for the Nex
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/KevincyCheng/VMC320.Android.git`
+1. Clone the repository: `git clone https://github.com/mcsnexcom/VMC320.Android.git`
 2. Navigate to the BOOT_APP directory: `cd VMC320.Android/BOOT_APP`
 3. Open the project in Android Studio.
 4. Build and run the application on your VMC320 device.
