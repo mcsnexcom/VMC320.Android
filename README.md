@@ -42,22 +42,22 @@ Repository: [lt6911_preview](lt6911_preview/README.md)
 ### 5. object_detect
 
 Using TensorFlow Lite, this application performs object detection on video input from the HDMI-IN source. It showcases the machine's ability to process and identify objects in real-time.
-Repository: [object_detect](tlite/object_detect/README.md)
+Repository: [object_detect](AI-TLite/object_detect/README.md)
 
 ### 6. posenet
 
 Similar to the object detection demo, this application uses TensorFlow Lite for pose estimation. It detects and tracks human poses in real-time using video input from the HDMI-IN source.
-Repository: [posenet](tlite/posenet/README.md)
+Repository: [posenet](AI-TLite/posenet/README.md)
 
 ### 7. style_transfer - HDMI-IN Style Transfer Application
 
 The style_transfer application captures video input from the HDMI-IN source of the Nexcom VMC320 vehicle mount computer and applies various artistic styles to the captured images. This demo showcases the capability of performing style transfer using advanced neural network techniques.
-Repository: [posenet](tlite/style_transfer/README.md)
+Repository: [posenet](AI-TLite/style_transfer/README.md)
 
 ### 8. image_segmentation - HDMI-IN Image Segmentation Application
 
 The image_segmentation application captures video input from the HDMI-IN source of the Nexcom VMC320 vehicle mount computer and performs real-time image segmentation to identify and classify objects within the captured images. This demo showcases the capability of performing object recognition and segmentation using advanced neural network techniques.
-Repository: [posenet](tlite/image_segmentation/README.md)
+Repository: [posenet](AI-TLite/image_segmentation/README.md)
 
 
 ---
