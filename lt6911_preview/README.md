@@ -16,7 +16,7 @@ The lt6911_preview application demonstrates the HDMI-IN functionality and audio 
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/KevincyCheng/VMC320.Android.git`
+1. Clone the repository: `git clone https://github.com/mcsnexcom/VMC320.Android.git`
 2. Navigate to the lt6911_preview directory: `cd VMC320.Android/lt6911_preview`
 3. Open the project in Android Studio.
 4. Build and run the application on your VMC320 device.

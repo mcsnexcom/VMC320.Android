@@ -15,7 +15,7 @@ The gsensor-lsm6ds application demonstrates the G-sensor capabilities of the Nex
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/KevincyCheng/VMC320.Android.git`
+1. Clone the repository: `git clone https://github.com/mcsnexcom/VMC320.Android.git`
 2. Navigate to the gsensor-lsm6ds directory: `cd VMC320.Android/gsensor-lsm6ds`
 3. Open the project in Android Studio.
 4. Build and run the application on your VMC320 device.
