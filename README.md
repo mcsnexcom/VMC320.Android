@@ -60,6 +60,12 @@ The image_segmentation application captures video input from the HDMI-IN source 
 Repository: [posenet](AI-TLite/image_segmentation/README.md)
 
 
+
+### 9. UFC 100
+
+UFC100 is an Android application designed to simulate the interface of a treadmill head unit. This app offers various controls and simulations, including different video playback speeds, app calls, Bluetooth, and sound controls.
+
+
 ---
 
 Feel free to explore the source code and modify it to suit your specific needs. Contributions and feedback are always welcome.
