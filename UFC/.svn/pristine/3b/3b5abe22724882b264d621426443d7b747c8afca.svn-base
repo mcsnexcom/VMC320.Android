@@ -1,0 +1,140 @@
+package com.nexcom.ufc;
+
+import android.util.Log;
+
+public class NexcomTools {
+    private static final String LOG_TAG = "NexcomTool";
+
+    private static int[] crc8_Table = {0x00, 0x5A, 0xB4, 0xEE, 0x32, 0x68, 0x86, 0xDC, 0x64, 0x3E, 0xD0, 0x8A, 0x56, 0x0C, 0xE2, 0xB8};
+
+    NexcomJNI mNexcomJNI = new NexcomJNI();
+    byte[] dataIn;
+    byte[] dataOut = new byte[32];
+    byte checksum;
+    int result = -1;
+
+    public byte[] JHTMCU(byte[] data) {
+        ResetDataOut();
+        int lenght = data.length;
+        int i;
+
+        dataIn = new byte[lenght+3];
+        dataIn[0] = (byte) 0x55;
+        dataIn[1] = (byte) 0xAA;
+
+        for (i = 0; i < lenght; i++) {
+            dataIn[i+2] = data[i];
+        }
+
+        dataIn[lenght+2] = getCRC8_U(dataIn, lenght+2);
+
+        Log.d(LOG_TAG, "=== JHT MCU Data In === " + ReadDataIn(lenght+3));
+        result = mNexcomJNI.mcuTest("/dev/ttymxc2", dataIn, dataOut);
+        Log.d(LOG_TAG, "=== JHT MCU Data Out === " + ReadDataOut(30));
+
+        return dataOut;
+    }
+
+    protected void resetHDMIEntry() {
+        try {
+            result = mNexcomJNI.systemCommand("/system/bin/echo e 2 > /proc/mx6s_v4l2/entry");
+            Thread.sleep(1 * 1000);
+            result = mNexcomJNI.systemCommand("/system/bin/cat /proc/tc35874x/read_resolution");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void fanControl(int level){
+
+        byte[] sendData = new byte[7];
+        byte[] resData;
+
+        sendData[0] = (byte) 0x02;
+        sendData[1] = (byte) 0x00;
+        sendData[2] = (byte) 0x00;
+        sendData[3] = (byte) 0x00;
+        sendData[4] = (byte) 0x01;
+        sendData[5] = (byte) 0x00;
+        switch (level) {
+            case 0:
+                sendData[6] = (byte) 0x00;  // 0%
+                break;
+            case 1:
+                sendData[6] = (byte) 0x0F;  // 15%
+                break;
+            case 2:
+                sendData[6] = (byte) 0x14;  // 20%
+                break;
+            case 3:
+                sendData[6] = (byte) 0x1E;  // 30%
+                break;
+            case 4:
+                sendData[6] = (byte) 0x28;  // 40%
+                break;
+            case 5:
+                sendData[6] = (byte) 0x32;  // 50%
+                break;
+            case 6:
+                sendData[6] = (byte) 0x3C;  // 60%
+                break;
+            case 7:
+                sendData[6] = (byte) 0x46;  // 70%
+                break;
+            case 8:
+                sendData[6] = (byte) 0x50;  // 80%
+                break;
+            case 9:
+                sendData[6] = (byte) 0x5A;  // 90%
+                break;
+            default:
+                sendData[6] = (byte) 0x64;  // 100%
+                break;
+        }
+        //sendData[6] = data;    // 0x14 > 20 ; 0x28 > 40 ; 0x32 > 50 ; 0x3C > 60 ; 0x50 > 80
+
+        resData = JHTMCU(sendData);
+    }
+
+    private String ReadDataIn(int len) {
+        int i;
+        String str = "";
+        for (i = 0; i < len; i++) {
+            str += String.format("%02X ", dataIn[i]);
+        }
+        return str;
+    }
+
+    private String ReadDataOut(int len) {
+        int i;
+        String str = "";
+        for (i = 0; i < len; i++) {
+            str += String.format("%02X ", dataOut[i]);
+        }
+        return str;
+    }
+
+    private void ResetDataOut() {
+        int i;
+        for (i = 0; i < 32; i++) {
+            dataOut[i] = (byte)0x00;
+        }
+    }
+
+    private static byte getCRC8_U(byte[] data, int lenght){
+        int ptrIndex = 0;
+        byte hightNibble_U, dataTemp_U, newCRC_U = 0;
+        while (lenght-- != 0){
+            dataTemp_U = data[ptrIndex];
+            hightNibble_U = (byte)(Byte.toUnsignedInt(newCRC_U) / 16);
+            newCRC_U = (byte)(Byte.toUnsignedInt(newCRC_U) << 4);
+            newCRC_U = (byte)(Byte.toUnsignedInt(newCRC_U) ^ crc8_Table[Byte.toUnsignedInt(hightNibble_U) ^ Byte.toUnsignedInt(dataTemp_U) / 16]);
+
+            hightNibble_U = (byte)(Byte.toUnsignedInt(newCRC_U) / 16);
+            newCRC_U = (byte)(Byte.toUnsignedInt(newCRC_U) << 4);
+            newCRC_U = (byte)(Byte.toUnsignedInt(newCRC_U) ^ crc8_Table[Byte.toUnsignedInt(hightNibble_U) ^ Byte.toUnsignedInt(dataTemp_U) & 0x0F]);
+            ptrIndex++;
+        }
+        return newCRC_U;
+    }
+}

@@ -1,0 +1,759 @@
+//
+// Created by nexcom on 11/7/18.
+//
+
+#include "NexcomUART.h"
+#define TIOCGRS485  0x542E
+#define TIOCSRS485  0x542F
+
+#define _Debug 0
+
+bool isUTF8(const void* pBuffer, long size){
+    bool isUTF8 = true;
+    unsigned char* start = (unsigned char*)pBuffer;
+    unsigned char* end = (unsigned char*)pBuffer + size;
+
+    while (start < end){
+        if(*start < 0x80){
+            start++;
+        }else if(*start < 0xC0){
+            isUTF8 = false;
+            break;
+        }else if(*start < 0xE0){
+            if(start >= end-1){
+                break;
+            }
+            if((start[1] & 0xC0) != 0x80){
+                isUTF8 = false;
+                break;
+            }
+            start += 2;
+        }else if(*start < 0xF0){
+            if(start >= end-2){
+                break;
+            }
+            if((start[1] & 0xC0) != 0x80 || (start[2] & 0xC0) != 0x80){
+                isUTF8 = false;
+                break;
+            }
+            start +=3;
+        }else{
+            isUTF8 = false;
+            break;
+        }
+    }
+    return isUTF8;
+}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*
+ * Class:     com_nexcom_ufc_NexcomJNI
+ * Method:    openUART
+ * Signature: (Ljava/lang/String;III)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_openUART
+        (JNIEnv *env, jobject obj, jstring dev, jint baudrate, jint mode){
+    const char *strDev = (*env).GetStringUTFChars(dev,0);
+    LOGI("==========\tUART Open Start\t==========");
+    LOGD("Device : %s", strDev);
+    LOGD("Baud rate : %d", baudrate);
+
+    int ttyMode = O_RDWR | O_NOCTTY;
+    if(mode == 1){
+        ttyMode |= O_NONBLOCK;
+    }
+
+    int fid = open(strDev, ttyMode);
+    if(fid < 0){
+        LOGE("Opening device %s failed.", strDev);
+        return fid;
+    }
+    LOGI("Opening device %s successfully, fd is %d", strDev, fid);
+
+    tcgetattr(fid, &oldtio);
+
+    unsigned int tmpBaudrate = B110;
+    switch (baudrate)
+    {
+        case 110:
+            tmpBaudrate = B110;
+            break;
+        case 300:
+            tmpBaudrate = B300;
+            break;
+        case 600:
+            tmpBaudrate = B600;
+            break;
+        case 1200:
+            tmpBaudrate = B1200;
+            break;
+        case 2400:
+            tmpBaudrate = B2400;
+            break;
+        case 4800:
+            tmpBaudrate = B4800;
+            break;
+        case 9600:
+            tmpBaudrate = B9600;
+            break;
+        case 19200:
+            tmpBaudrate = B19200;
+            break;
+        case 38400:
+            tmpBaudrate = B38400;
+            break;
+        case 57600:
+            tmpBaudrate = B57600;
+            break;
+        case 115200:
+            tmpBaudrate = B115200;
+            break;
+        default:
+            tmpBaudrate = B115200;
+            break;
+    }
+
+    newtio.c_cflag = tmpBaudrate | CS8 | CLOCAL | CREAD;
+
+    newtio.c_iflag = IGNPAR | ICRNL;
+
+    newtio.c_oflag = 0;
+
+    newtio.c_lflag = 0;
+
+    newtio.c_cc[VINTR] = 0;
+    newtio.c_cc[VQUIT] = 0;
+    newtio.c_cc[VERASE] = 0;
+    newtio.c_cc[VKILL] = 0;
+    newtio.c_cc[VEOF] = 4;
+    newtio.c_cc[VTIME] = 0;
+    newtio.c_cc[VSWTC] = 0;
+    newtio.c_cc[VSTART] = 0;
+    newtio.c_cc[VSTOP] = 0;
+    newtio.c_cc[VSUSP] = 0;
+    newtio.c_cc[VEOL] = 0;
+    newtio.c_cc[VREPRINT] = 0;
+    newtio.c_cc[VDISCARD] = 0;
+    newtio.c_cc[VWERASE] = 0;
+    newtio.c_cc[VLNEXT] = 0;
+    newtio.c_cc[VEOL2] = 0;
+    if(mode == 1)
+        newtio.c_cc[VMIN] = 0;
+    else
+        newtio.c_cc[VMIN] = 1;
+
+    newtio.c_line = 0;
+
+    tcflush(fid, TCIFLUSH);
+    tcsetattr(fid, TCSANOW, &newtio);
+#if _Debug
+    LOGI("==========\tUART Open End\t==========");
+#endif
+    return fid;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    closeUART
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_closeUART
+        (JNIEnv *env, jobject obj, jint fd){
+    LOGI("==========\tUART Close Start\t==========");
+    int ret = -1;
+    if(fd > 0){
+        LOGI("Restoring original termios settings.");
+        tcsetattr(fd, TCSANOW, &oldtio);
+        ret = close(fd);
+        if(ret == 0)
+            LOGI("Closing device successfully.");
+        else
+            LOGE("Closing device failed.");
+    }
+    LOGI("==========\tUART Close End\t==========");
+    return ret;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    sendUART
+ * Signature: (ILjava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_sendUART
+        (JNIEnv *env, jobject obj, jint fd, jstring msg, jint format){
+    LOGI("==========\tUART Send data Start\t==========");
+    const char *tmpMsg = (*env).GetStringUTFChars(msg, 0);
+    LOGD("Message : %s", tmpMsg);
+    int len = 0;
+    int ret = -1;
+
+    if(fd > 0) {
+        len = (*env).GetStringLength(msg);
+        if(format == 0){    // 0:ASCII 1:HEX
+            LOGI("Write ASCII start...");
+            len = write(fd, tmpMsg, len);
+            LOGI("Write ASCII finish..");
+        } else {    // HEX
+            const char *const delim = " ";
+            char buf[len];
+            memset(buf, 0, sizeof(buf));
+            char *subStr = NULL;
+            strcpy(buf, tmpMsg);
+            char dataAy[255] = {0};
+            char tmpData[20] = {0};
+            LOGD("Original string : %s (@%p) , copy string : %s (@%p)", tmpMsg, tmpMsg, buf, buf);
+            subStr = strtok(buf, delim);
+            len = 0;
+            while (subStr){
+                dataAy[len] = (char)strtol(subStr, NULL, 16);
+                LOGD("#%d convert int : %d", len, dataAy[len]);
+                subStr = strtok(NULL, delim);
+                len++;
+            }
+            LOGI("Write HEX start...");
+            len = write(fd, dataAy, len);
+            LOGD("Data length : %d", len);
+            LOGI("Write HEX finish..");
+        }
+        if(len >= 0){
+            LOGI("Write data to device successfully.");
+            ret = 0;
+        } else {
+            LOGE("Write data to device failed.");
+        }
+        (*env).ReleaseStringUTFChars(msg, tmpMsg);
+    }
+    LOGI("==========\tUART Send data End\t==========");
+    return ret;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    receiveUART
+ * Signature: (I)I
+ */
+JNIEXPORT jstring JNICALL Java_com_nexcom_ufc_NexcomJNI_receiveUART
+        (JNIEnv *env, jobject obj, jint fd){
+    LOGI("==========\tUART Receive data Start\t==========");
+    char buffer[255] = {0};
+    if(fd > 0){
+        int len = read(fd, buffer, sizeof(buffer)-1);
+        if(len > 0){
+            if(isUTF8(buffer, len)){
+                LOGD("(UTF8) Data : %s , data length : %d", buffer, len);
+                return (*env).NewStringUTF(buffer);
+            }else{
+                LOGD("(Non-UTF8) Data length : %d", len);
+                return NULL;
+            }
+        } else {
+            LOGE("Reading data from device failed.");
+        }
+    } else {
+        LOGE("Can not read data from device.");
+    }
+
+    LOGI("==========\tUART Receive data End\t==========");
+    return NULL;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    mcuTest
+ * Signature: (Ljava/lang/String;[C[C)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_mcuTest
+        (JNIEnv *env, jobject obj, jstring dev, jbyteArray dataIn, jbyteArray dataOut) {
+    int res = -1;
+#if _Debug
+    LOGI("==========\tMCU Command Open Start\t==========");
+#endif
+    const char *strDev = (*env).GetStringUTFChars(dev,0);
+#if _Debug
+    LOGD("Device : %s", strDev);
+#endif
+    int ttyMode = O_RDWR | O_NOCTTY | O_NONBLOCK;
+
+    int fid = open(strDev, ttyMode);
+    if(fid < 0){
+        LOGE("Opening device %s failed.", strDev);
+        return fid;
+    }
+#if _Debug
+    LOGI("Opening device %s successfully, fd is %d", strDev, fid);
+#endif
+    tcgetattr(fid, &oldtio);
+
+    unsigned int tmpBaudrate = B115200;
+
+    newtio.c_cflag = tmpBaudrate | CS8 | CLOCAL | CREAD;
+
+    newtio.c_iflag = IGNPAR ;    // IGNPAR | ICRNL;
+
+    newtio.c_oflag = 0;
+
+    newtio.c_lflag = 0;
+
+    newtio.c_cc[VINTR] = 0;
+    newtio.c_cc[VQUIT] = 0;
+    newtio.c_cc[VERASE] = 0;
+    newtio.c_cc[VKILL] = 0;
+    newtio.c_cc[VEOF] = 4;
+    newtio.c_cc[VSWTC] = 0;
+    newtio.c_cc[VSTART] = 0;
+    newtio.c_cc[VSTOP] = 0;
+    newtio.c_cc[VSUSP] = 0;
+    newtio.c_cc[VEOL] = 0;
+    newtio.c_cc[VREPRINT] = 0;
+    newtio.c_cc[VDISCARD] = 0;
+    newtio.c_cc[VWERASE] = 0;
+    newtio.c_cc[VLNEXT] = 0;
+    newtio.c_cc[VEOL2] = 0;
+// For MCU Command
+    newtio.c_cc[VTIME] = 1;
+    newtio.c_cc[VMIN] = 250;
+
+    newtio.c_line = 0;
+
+    tcflush(fid, TCIFLUSH);
+    tcsetattr(fid, TCSANOW, &newtio);
+
+#if _Debug
+    LOGI("==========\tMCU Command Open End\t==========");
+#endif
+    jbyte *jDataIn;
+    jbyte *jDataOut;
+    int i, count;
+    int j;
+    char tmpData[4];
+
+#if _Debug
+    LOGI("==========\tMCU Command Send Start\t==========");
+#endif
+    if (fid > 0) {
+        count = (*env).GetArrayLength(dataIn);
+        jDataIn = (*env).GetByteArrayElements(dataIn, 0);
+        char sendData[count];
+        char sLogData[((count*3)+1)];
+        memset(sendData, 0, sizeof(sendData));
+//        LOGD("Write MCU Command Start >>>>>");
+        for (i = 0; i < count; i++) {
+            sendData[i] = jDataIn[i];
+            sprintf(tmpData, "%02X ", sendData[i]);
+//            LOGD("\tSend Data [%d] >> 0x%02X", i, sendData[i]);
+            for (j = 0; j < 3; j++) {
+                sLogData[((i*3)+j)] = tmpData[j];
+            }
+        }
+        sLogData[(count*3)] = '\0';
+        LOGD("\tSend Data >> %s", sLogData);
+        res = write(fid, sendData, count);
+//        LOGD("Write MCU Command Finish.");
+        if (res >= 0) {
+#if _Debug
+            LOGI("Write data to device successfully.");
+#endif
+            res = 0;
+        } else {
+            LOGE("Write data to device failed.");
+            return res;
+        }
+    }
+#if _Debug
+    LOGI("==========\tMCU Command Send End\t==========");
+#endif
+    usleep(150 * 1000);
+
+#if _Debug
+    LOGI("==========\tMCU Command Receive Start\t==========");
+#endif
+    count = (*env).GetArrayLength(dataOut);
+    char receiveData[count];
+    char rLogData[((count*3)+1)];
+    memset(receiveData, 0, sizeof(receiveData));
+    jDataOut = (jbyte*)malloc(count * sizeof(jbyte));
+    res = read(fid, receiveData, count);
+    if (res > 0) {
+//        LOGD("Receive Data Start >>>>>");
+        for (i = 0; i < count; i++) {
+            jDataOut[i] = receiveData[i];
+            sprintf(tmpData, "%02X ", receiveData[i]);
+//            LOGD("\tReceive Data [%d] >> 0x%02X", i, receiveData[i]);
+            for ( j = 0; j < 3; j++) {
+                rLogData[((i*3)+j)] = tmpData[j];
+            }
+        }
+        rLogData[(count*3)] = '\0';
+        LOGD("\tReceive Data >> %s", rLogData);
+        (*env).SetByteArrayRegion(dataOut, 0, count, jDataOut);
+    } else {
+        LOGE("Reading data from device failed.");
+    }
+#if _Debug
+    LOGI("==========\tMCU Command Receive End\t==========");
+#endif
+
+#if _Debug
+    LOGI("==========\tMCU Command Close Start\t==========");
+#endif
+    if(fid > 0){
+#if _Debug
+        LOGI("Restoring original termios settings.");
+#endif
+        tcsetattr(fid, TCSANOW, &oldtio);
+        res = close(fid);
+        if(res == 0) {
+#if _Debug
+            LOGI("Closing device successfully.");
+#endif
+        } else {
+            LOGE("Closing device failed.");
+            return res;
+        }
+    }
+#if _Debug
+    LOGI("==========\tMCU Command Close End\t==========");
+#endif
+    return res;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    mcuTest
+ * Signature: (Ljava/lang/String;[C[C)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_mcuReceive
+        (JNIEnv *env, jobject obj, jint fd, jbyteArray dataOut) {
+    int res = -1;
+
+    jbyte *jDataOut;
+    int i, count;
+    int j;
+    char tmpData[3];
+
+    LOGI("==========\tMCU KeyEvent Receive Start\t==========");
+    count = (*env).GetArrayLength(dataOut);
+    char receiveData[count];
+    char rLogData[((count*3)+1)];
+    memset(receiveData, 0, sizeof(receiveData));
+    jDataOut = (jbyte*)malloc(count * sizeof(jbyte));
+    res = read(fd, receiveData, count);
+    if (res > 0) {
+//        LOGD("Receive Data Start >>>>>");
+        for (i = 0; i < count; i++) {
+            jDataOut[i] = receiveData[i];
+            sprintf(tmpData, "%02X ", receiveData[i]);
+//            LOGD("\tReceive Data [%d] >> 0x%02X", i, receiveData[i]);
+            for ( j = 0; j < 3; j++) {
+                rLogData[((i*3)+j)] = tmpData[j];
+            }
+        }
+        rLogData[(count*3)] = '\0';
+        LOGD("\tReceive Data >> %s", rLogData);
+        (*env).SetByteArrayRegion(dataOut, 0, count, jDataOut);
+    } else {
+        LOGE("Reading data from device failed.");
+    }
+    LOGI("==========\tMCU KeyEvent Receive End\t==========");
+    return res;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    nPingIP
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_nPingIP
+        (JNIEnv *env, jobject obj, jstring msg) {
+    LOGI("===== 001 =====");
+    const char *tmpMsg = (*env).GetStringUTFChars(msg, 0);
+    LOGD("Message : %s", tmpMsg);
+    char MyIpBuff[250] = {0};
+    FILE *fpRead;
+    int i = 0;
+    fpRead = popen(tmpMsg, "r");
+    LOGI("===== 002 =====");
+    LOGI("===== 003 =====");
+    fgets(MyIpBuff, sizeof(MyIpBuff), fpRead);
+    LOGI("===== 004 =====");
+    LOGI("** %s **", MyIpBuff);
+    LOGI("===== 005 =====");
+    pclose(fpRead);
+    return NULL;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    changeHDMI
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_changeHDMI
+        (JNIEnv *env, jobject obj, jint port) {
+//    LOGI("===== 001 =====");
+    // echo "0" > /sys/class/gpio/gpio5/value   //CN2
+    // echo "1" > /sys/class/gpio/gpio5/value   //CN3
+    switch (port) {
+        case 1: //  CN2
+            LOGI("===== Open HDMI CN2 =====");
+            system("echo \"0\" > /sys/class/gpio/gpio5/value");
+            break;
+        case 2: //  CN3
+            LOGI("===== Open HDMI CN3 =====");
+            system("echo \"1\" > /sys/class/gpio/gpio5/value");
+            break;
+        case 3: //  Open UART_04 (J17)
+            LOGI("===== Open UART J17 =====");
+            system("echo \"0\" > /sys/class/gpio/gpio126/value");
+            break;
+        case 4: // Close UART_04 (J17)
+            LOGI("===== Close UART J17 =====");
+            system("echo \"1\" > /sys/class/gpio/gpio126/value");
+            break;
+        case 20:    // Open Mute Power
+#if _Debug
+            LOGI("===== Open Mute Power =====");
+#endif
+            system("echo \"1\" > /sys/class/gpio/gpio0/value");
+            break;
+        case 21:    // Open Line In Power
+#if _Debug
+            LOGI("===== Open Line In Power =====");
+#endif
+            system("echo \"1\" > /sys/class/gpio/gpio1/value");
+            break;
+        case 30:    // Close Mute Power
+#if _Debug
+            LOGI("===== Close Mute Power =====");
+#endif
+            system("echo \"0\" > /sys/class/gpio/gpio0/value");
+            break;
+        case 31:    // Close Line In Power
+#if _Debug
+            LOGI("===== Close Line In Power =====");
+#endif
+            system("echo \"0\" > /sys/class/gpio/gpio1/value");
+            break;
+        case 99:    // hwclock control
+//#if _Debug
+            LOGI("===== busybox hwclock (W) =====");
+//#endif
+            system("am broadcast -a com.nex.factory_rtc_set");
+//#if _Debug
+            LOGI("===== busybox hwclock (W) =====");
+//#endif
+            break;
+        default:
+            LOGE("Port Name Error!");
+            return false;
+    }
+    return true;
+
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    systemCommand
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_systemCommand
+        (JNIEnv *env, jobject obj, jstring msg) {
+    LOGI("===== 01: Init System Command =====");
+    const char *tmpMsg = (*env).GetStringUTFChars(msg, 0);
+    LOGD("Message : %s", tmpMsg);
+    char MyIpBuff[250] = {0};
+    FILE *fpRead;
+#if _Debug
+    LOGI("===== 02: Send System Command =====");
+#endif
+    fpRead = popen(tmpMsg, "r");
+#if _Debug
+    LOGI("===== 03: Wait System Command =====");
+#endif
+    usleep(500);
+    fgets(MyIpBuff, sizeof(MyIpBuff), fpRead);
+#if _Debug
+    LOGI("===== 04: Receive System Command =====");
+#endif
+    LOGI("%s", MyIpBuff);
+#if _Debug
+    LOGI("===== 05: Close System Command =====");
+#endif
+    pclose(fpRead);
+    LOGI("===== 06: Finish System Command =====");
+    return NULL;
+}
+
+/*
+ * Class:     com_nexcom_johnsonfactorytest_NexcomUART
+ * Method:    rs485Test
+ * Signature: (Ljava/lang/String;[C[C)I
+ */
+JNIEXPORT jint JNICALL Java_com_nexcom_ufc_NexcomJNI_rs485Test
+        (JNIEnv *env, jobject obj, jstring dev, jbyteArray dataIn, jbyteArray dataOut) {
+    const char *strDev = env->GetStringUTFChars(dev, 0);
+    jbyte *jDataIn = env->GetByteArrayElements(dataIn, NULL);
+    jbyte *jDataOut = env->GetByteArrayElements(dataOut, NULL);
+
+    // TODO
+    struct serial_rs485 rs485conf;
+
+    int res = -1;
+
+#if _Debug
+    LOGI("==========\tRS485 Command Open Start\t==========");
+#endif
+    LOGD("Device : %s", strDev);
+
+    int ttyMode = O_RDWR | O_NOCTTY | O_NONBLOCK;
+
+    int fid = open(strDev, ttyMode);
+    if (fid < 0) {
+        LOGE("Opening device %s failed.", strDev);
+        return fid;
+    }
+    LOGI("Opening device %s successfully, fd is %d", strDev, fid);
+
+    tcgetattr(fid, &oldtio);
+
+    unsigned int tmpBaudrate = B9600; //  B115200
+
+    newtio.c_cflag = tmpBaudrate | CS8 | CLOCAL | CREAD;
+
+    newtio.c_iflag = IGNPAR;    // | ICRNL;
+
+    newtio.c_oflag = 0;
+
+    newtio.c_lflag = 0;
+
+    newtio.c_cc[VINTR] = 0;
+    newtio.c_cc[VQUIT] = 0;
+    newtio.c_cc[VERASE] = 0;
+    newtio.c_cc[VKILL] = 0;
+    newtio.c_cc[VEOF] = 4;
+    newtio.c_cc[VSWTC] = 0;
+    newtio.c_cc[VSTART] = 0;
+    newtio.c_cc[VSTOP] = 0;
+    newtio.c_cc[VSUSP] = 0;
+    newtio.c_cc[VEOL] = 0;
+    newtio.c_cc[VREPRINT] = 0;
+    newtio.c_cc[VDISCARD] = 0;
+    newtio.c_cc[VWERASE] = 0;
+    newtio.c_cc[VLNEXT] = 0;
+    newtio.c_cc[VEOL2] = 0;
+// For MCU Command
+    newtio.c_cc[VTIME] = 1;
+    newtio.c_cc[VMIN] = 250;
+
+    newtio.c_line = 0;
+
+    rs485conf.flags |= SER_RS485_ENABLED;
+    rs485conf.flags &= ~(SER_RS485_RTS_ON_SEND);
+    rs485conf.flags |= SER_RS485_RTS_AFTER_SEND;
+    rs485conf.delay_rts_before_send = 50;
+    rs485conf.delay_rts_after_send = 10;
+
+    ioctl(fid, TIOCSRS485, &rs485conf);
+
+    tcflush(fid, TCIFLUSH);
+    tcsetattr(fid, TCSANOW, &newtio);
+
+#if _Debug
+    LOGI("==========\tRS485 Command Open End\t==========");
+#endif
+
+    int i, count;
+    int j;
+    char tmpData[3];
+
+#if _Debug
+    LOGI("==========\tRS485 Command Send Start\t==========");
+#endif
+    if (fid > 0) {
+        count = (*env).GetArrayLength(dataIn);
+//        jDataIn = (*env).GetByteArrayElements(dataIn, 0);
+        char sendData[count];
+        char sLogData[((count*3)+1)];
+        memset(sendData, 0, sizeof(sendData));
+//        LOGD("Write RS485 Command Start >>>>>");
+        for (i = 0; i < count; i++) {
+            sendData[i] = jDataIn[i];
+            sprintf(tmpData, "%02X ", sendData[i]);
+//            LOGD("\tSend Data [%d] >> 0x%02X", i, sendData[i]);
+            for (j = 0; j < 3; j++) {
+                sLogData[((i*3)+j)] = tmpData[j];
+            }
+        }
+        sLogData[(count*3)] = '\0';
+        LOGD("\tRS485 Send Data >> %s", sLogData);
+        res = write(fid, sendData, count);
+//        LOGD("Write RS485 Command Finish.");
+        if (res >= 0) {
+            LOGI("Write RS485 data to device successfully.");
+            res = 0;
+        } else {
+            LOGE("Write RS485 data to device failed.");
+            return res;
+        }
+    }
+#if _Debug
+    LOGI("==========\tRS485 Command Send End\t==========");
+#endif
+
+    usleep(250 * 1000);
+
+#if _Debug
+    LOGI("==========\tRS485 Command Receive Start\t==========");
+#endif
+    count = (*env).GetArrayLength(dataOut);
+    char receiveData[count];
+    char rLogData[((count*3)+1)];
+    memset(receiveData, 0, sizeof(receiveData));
+    jDataOut = (jbyte *) malloc(count * sizeof(jbyte));
+    res = read(fid, receiveData, count);
+    if (res > 0) {
+//        LOGD("Receive Data Start >>>>>");
+        for (i = 0; i < count; i++) {
+            jDataOut[i] = receiveData[i];
+            sprintf(tmpData, "%02X ", receiveData[i]);
+//            LOGD("\tReceive Data [%d] >> 0x%02X", i, receiveData[i]);
+            for ( j = 0; j < 3; j++) {
+                rLogData[((i*3)+j)] = tmpData[j];
+            }
+        }
+        rLogData[(count*3)] = '\0';
+        LOGD("\tRS485 Receive Data >> %s", rLogData);
+        (*env).SetByteArrayRegion(dataOut, 0, count, jDataOut);
+    } else {
+        LOGE("Reading RS485 data from device failed.");
+    }
+#if _Debug
+    LOGI("==========\tRS485 Command Receive End\t==========");
+#endif
+
+#if _Debug
+    LOGI("==========\tRS485 Command Close Start\t==========");
+#endif
+    if(fid > 0){
+        LOGI("Restoring original termios settings.");
+        tcsetattr(fid, TCSANOW, &oldtio);
+        res = close(fid);
+        if(res == 0) {
+            LOGI("Closing device successfully.");
+        } else {
+            LOGE("Closing device failed.");
+            return res;
+        }
+    }
+#if _Debug
+    LOGI("==========\tRS485 Command Close End\t==========");
+#endif
+
+    return res;
+}
+
+#ifdef __cplusplus
+}
+#endif

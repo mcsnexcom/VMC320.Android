@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    android:background="@android:color/white"
+    tools:context=".MainActivity">
+
+<!-- =========== Header ===================== -->
+    <LinearLayout
+        android:id="@+id/header_title"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/layout_header"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="1dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/nexcomLogo"
+                android:layout_width="223dp"
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                android:defaultFocusHighlightEnabled="false"
+                android:scaleType="center"
+                android:src="@drawable/menu_logo" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/menuIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_header"
+                android:scaleType="center"
+                android:src="@drawable/menu_bluetooth_off" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/layout_header"
+                android:src="@drawable/menu_function" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+<!-- ============ Body ===================== -->
+    <LinearLayout
+        android:id="@+id/main_body"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+<!-- ============ Body Left ===================== -->
+        <LinearLayout
+            android:id="@+id/body_left"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:layout_marginRight="5dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/layout_footer"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="15dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="HEART RATE"
+                    android:textColor="#FF00E5FF"
+                    android:textScaleX="0.75"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:id="@+id/textHeartRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center_horizontal"
+                    android:text="0"
+                    android:textColor="#FFF7D358"
+                    android:textSize="30dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="1dp"
+                android:background="@drawable/layout_footer">
+
+                <ImageButton
+                    android:id="@+id/btnHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/layout_footer"
+                    android:src="@drawable/button_home" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="1dp"
+                android:background="@drawable/layout_footer">
+
+                <ImageButton
+                    android:id="@+id/btnReturn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/layout_footer"
+                    android:src="@drawable/button_back" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+<!-- ================== Center =================== -->
+        <LinearLayout
+            android:id="@+id/body_center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@drawable/bg_video"
+            android:gravity="center" >
+
+            <TextureView
+                android:id="@+id/textureViewUFC"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+<!-- ============ Body Right ===================== -->
+        <LinearLayout
+            android:id="@+id/body_right"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:layout_marginLeft="5dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/layout_footer"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="15dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="TOTAL DISTANCE"
+                    android:textColor="#FF00E5FF"
+                    android:textScaleX="0.75"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:id="@+id/textTotalDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center_horizontal"
+                    android:text="0"
+                    android:textColor="#FFF7D358"
+                    android:textSize="30dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="1dp"
+                android:background="@drawable/layout_footer">
+
+                <ImageButton
+                    android:id="@+id/btnFan"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/layout_footer"
+                    android:src="@drawable/button_fan_off" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="1dp"
+                android:background="@drawable/layout_footer">
+
+                <ImageButton
+                    android:id="@+id/btnVolume"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/layout_footer"
+                    android:src="@drawable/button_volume_off" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+<!-- =============== Buttom ======================= -->
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/layout_footer">
+
+            <ImageButton
+                android:id="@+id/btnVideo"
+                android:layout_width="130dp"
+                android:layout_height="93dp"
+                android:background="@drawable/layout_footer"
+                android:src="@drawable/button_video" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/layout_footer">
+
+            <ImageButton
+                android:id="@+id/btnGradientDecrease"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/layout_footer"
+                android:src="@drawable/button_decrease" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="15dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="GRADIENT"
+                    android:textColor="#FF00E5FF"
+                    android:textScaleX="0.75"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:id="@+id/textGradient"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="2"
+                    android:gravity="center_horizontal"
+                    android:text="0"
+                    android:textColor="#FFF7D358"
+                    android:textSize="20dp" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnGradientIncrease"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/layout_footer"
+                android:src="@drawable/button_increase" />
+
+            <ImageButton
+                android:id="@+id/btnStop"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_stop_0240"
+                android:scaleType="center" />
+
+            <ImageButton
+                android:id="@+id/btnSpeedDecrease"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/layout_footer"
+                android:src="@drawable/button_decrease" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="15dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="SPEED"
+                    android:textColor="#FF00E5FF"
+                    android:textScaleX="0.75"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:id="@+id/textSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center_horizontal"
+                    android:text="1"
+                    android:textColor="#FFF7D358"
+                    android:textSize="20dp" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/btnSpeedIncrease"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/layout_footer"
+                android:src="@drawable/button_increase" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/layout_footer">
+
+            <ImageButton
+                android:id="@+id/btnBluetooth"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/layout_footer"
+                android:src="@drawable/button_bluetooth" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

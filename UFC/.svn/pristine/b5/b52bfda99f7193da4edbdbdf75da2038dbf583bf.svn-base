@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/buttonDefault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Default Video"/>
+
+    <Button
+        android:id="@+id/buttonVideo01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2020 Corporate"/>
+
+    <Button
+        android:id="@+id/buttonVideo02"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MCS Always Moving Forward"/>
+
+    <Button
+        android:id="@+id/buttonVideo03"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Serving A Better Life"/>
+
+    <Button
+        android:id="@+id/buttonVideo04"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Default Video 2"/>
+
+</LinearLayout>

@@ -1,0 +1,25 @@
+package com.nexcom.ufc;
+
+public class NexcomJNI {
+    // Used to load the 'NexcomLib' library on application startup.
+    static {
+        System.loadLibrary("NexcomLib");
+    }
+
+    /**
+     * A native method that is implemented by the 'NexcomLib' native library,
+     * which is packaged with this application.
+     */
+
+    public native int openUART(String dev, int baudrate, int mode);
+    public native int closeUART(int fd);
+    public native int sendUART(int fd, String msg, int format);
+    public native String receiveUART(int fd);
+    public native int mcuTest(String dev, byte[] dataIn, byte[] dataOut);
+    //    public native int mcuReceive(String dev, byte[] dataOut);
+    public native int mcuReceive(int fd, byte[] dataOut);
+    public native int nPingIP(String msg);
+    public native int changeHDMI(int port);
+    public native int systemCommand(String msg);
+    public native int rs485Test(String dev, byte[] dataIn, byte[] dataOut);
+}
