@@ -20,6 +20,7 @@ This application serves as the initial home launcher for the VMC320. It demonstr
 - Key event handling
 - Video playback
 - Network status monitoring
+Repository: [VMC320.Android](BOOT_APP/README.md))
 
 ### 2. NexcomGPS
 
