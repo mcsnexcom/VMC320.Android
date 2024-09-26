@@ -52,18 +52,20 @@ Repository: [posenet](AI-TLite/posenet/README.md)
 ### 7. style_transfer - HDMI-IN Style Transfer Application
 
 The style_transfer application captures video input from the HDMI-IN source of the Nexcom VMC320 vehicle mount computer and applies various artistic styles to the captured images. This demo showcases the capability of performing style transfer using advanced neural network techniques.
-Repository: [posenet](AI-TLite/style_transfer/README.md)
+Repository: [style_transfer](AI-TLite/style_transfer/README.md)
 
 ### 8. image_segmentation - HDMI-IN Image Segmentation Application
 
 The image_segmentation application captures video input from the HDMI-IN source of the Nexcom VMC320 vehicle mount computer and performs real-time image segmentation to identify and classify objects within the captured images. This demo showcases the capability of performing object recognition and segmentation using advanced neural network techniques.
-Repository: [posenet](AI-TLite/image_segmentation/README.md)
+Repository: [image_segmentation](AI-TLite/image_segmentation/README.md)
 
 
 
 ### 9. UFC 100
 
 UFC100 is an Android application designed to simulate the interface of a treadmill head unit. This app offers various controls and simulations, including different video playback speeds, app calls, Bluetooth, and sound controls.
+Repository: [UFC-100](UFC/README.md)
+
 
 
 ---
